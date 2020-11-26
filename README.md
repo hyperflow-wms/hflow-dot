@@ -4,13 +4,13 @@ A collection of small useful tools for the HyperFlow workflow engine
 
 - `hflow-info`: print various information about a workflow and annotate workflow json file.
 - `hflow-dot`: convert HyperFlow workflow graph to Graphviz dot format. 
-- `hflow-metis`: convert HyperFlow workflow graph to Metis format (for graph partitioning).
+- `hflow-metis`: convert HyperFlow workflow graph to [Metis](http://glaros.dtc.umn.edu/gkhome/metis/metis/overview) format (graph partitioning tool).
+- `hflow-patoh`: convert HyperFlow workflow graph to [Patoh](https://www.cc.gatech.edu/~umit/software.html) format (graph partitioning tool).
 - `hflow-convert-makeflow`: convert [Makeflow](http://ccl.cse.nd.edu/software/makeflow) mf/json workflow to HyperFlow json.
 
 ## Requirements
 
 - Node v12.x
-- Python 3.7 + pipenv (for `hflow-viz-trace`)
 
 ## Installation
 ```
@@ -69,6 +69,20 @@ Using [Metis](http://glaros.dtc.umn.edu/gkhome/metis/metis/overview) to generate
 gpmetis -objtype vol workflow.metis 2
 ```
 Where `vol` is the recommended optimization objective (minimizes communication between partitions), and `2` is the number of partitions.
+
+### hflow-patoh
+```
+Usage:
+  hflow-patoh [--ew] [--nw] [--ns] [--sn] [--lw=<npart>] [--pwgts=<pwgts>] <workflow-json-file-path>
+  hflow-patoh -h|--help
+  Options:
+  -h --help   Prints this
+  --ew        Add edge weights (communication volume)
+  --nw        Add node weights (requested cpu)
+  --sn        Add special storage node
+  --lw=<npart>     Add level weights for 'npart' partitions
+  --pwgts=<pwgts>  Partition size weights, e.g. '0.3,0.7'
+```
 
 ### hflow-convert-makeflow
 ```
