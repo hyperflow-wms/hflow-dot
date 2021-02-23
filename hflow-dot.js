@@ -10,7 +10,7 @@ var fs       = require('fs'),
 var doc = "\
 hflow-dot: converts HyperFlow workflow.json to graphviz dot format\n\
 Usage:\n\
-  hflow-dot [-p] [--full] [--png] [--nolabels] <workflow-json-file-path>\n\
+  hflow-dot [-p] [--full] [--png] [--nolabels] [--legend] <workflow-json-file-path>\n\
   hflow-dot -h|--help\n\
   \
 Options:\n\
@@ -18,6 +18,7 @@ Options:\n\
   --png       Generate png\n\
   --full      Generate full graph (with input and output nodes)\n\
   --nolabels  Do not add node names\n\
+  --legend   Generate 'legend' graph\n\
   -p          Generates graph according to paritioning info";
 
 var opts = docopt(doc);
@@ -26,6 +27,7 @@ var partitioning = opts['-p'];
 var png = opts['--png'];
 var full = opts['--full'];
 var nolabels = opts['--nolabels'];
+var legend = opts['--legend'];
 
 var file = opts['<workflow-json-file-path>'];
 
@@ -112,33 +114,47 @@ if (full) { // generate full graph
       alpha: 1
   });
 
-  // build the graphviz graph and save it
-  procg.nodes().forEach(function(proc, idx) {
-    var n = g.addNode(proc);
-    var name = procg.node(proc);
-    let procId = Number(proc.split(':')[1])-1;
-    if (partitioning) {
-      n.set('label', "");
-      let parNum = processes[procId].config.executor.partition-1;
-      n.set('color', colors[parNum]);
-    } else {
-      n.set('label', nolabels ? '': name);
+  // just generate "legend"
+  if (legend) {
+    var n;
+    procNamesArray.forEach(function(name, idx) {
+      n = g.addNode(name);
+      n.set('label', name);
       n.set('color', colors[procNames[name]]);
-    }
-    // special storage node
-    if (processes[procId].type == "special") {
-      n.set('shape', 'cylinder');
-      n.set('width', 1.0);
-      n.set('height', 1.0);
-    }
-    n.set('style', 'filled');
-    procg.successors(proc).forEach(function(succ) {
-      g.addEdge(proc, succ);
+      n.set('style', 'filled');
     });
-  });
+  } else {
+    // build the graphviz graph and save it
+    procg.nodes().forEach(function(proc, idx) {
+      var n = g.addNode(proc);
+      var name = procg.node(proc);
+      let procId = Number(proc.split(':')[1])-1;
+      if (partitioning) {
+        n.set('label', "");
+        let parNum = processes[procId].config.executor.partition-1;
+        n.set('color', colors[parNum]);
+      } else {
+        n.set('label', nolabels ? '': name);
+        n.set('color', colors[procNames[name]]);
+      }
+      // special storage node
+      if (processes[procId].type == "special") {
+        n.set('shape', 'cylinder');
+        n.set('width', 1.0);
+        n.set('height', 1.0);
+      }
+      n.set('style', 'filled');
+      procg.successors(proc).forEach(function(succ) {
+        g.addEdge(proc, succ);
+      });
+    });
+  }
 }
 
 let basename = file.substring(0, file.lastIndexOf('.'));
+if (legend) {
+  basename += "-legend";
+}
 
 if (png) {
   g.output( {
