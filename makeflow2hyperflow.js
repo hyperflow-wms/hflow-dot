@@ -20,7 +20,9 @@ const readline = require('readline');
 // TODO: make it a config file
 var nameMap = [
     [ "bwa", "index", "bwa_index" ],
-    [ "bwa", "mem", "bwa_mem" ]
+    [ "bwa", "mem", "bwa_mem" ],
+    [ "samtools", "view", "samtools_view" ],
+    [ "samtools", "mpileup", "samtools_mpileup" ]
 ];
 
 
@@ -95,12 +97,12 @@ function createWorkflow(wf_mfjson, functionName, cb) {
         var stdoutIdx = args.indexOf(">");
         var stderrIdx = args.indexOf("2>");
         var pipeIdx = args.indexOf("|");
-        if (stdoutIdx != -1) {
+        if (stdoutIdx != -1 && (stdoutIdx < pipeIdx || pipeIdx == -1)) {
             cmdObj.stdout = args[stdoutIdx+1];
             delete args[stdoutIdx];
             delete args[stdoutIdx+1];
         }
-        if (stderrIdx != -1) {
+        if (stderrIdx != -1 && (stderrIdx < pipeIdx || pipeIdx == -1)) {
             cmdObj.stderr = args[stderrIdx+1];
             delete args[stderrIdx];
             delete args[stderrIdx+1];
@@ -109,8 +111,10 @@ function createWorkflow(wf_mfjson, functionName, cb) {
             cmdObj.pipes = true;
             if (args[pipeIdx+1].substring(0,2) == "./") { args[pipeIdx+1] = args[pipeIdx+1].substring(2); }
             // if there's a pipe, we recursively create a command object and put it into 'pipeTo'
-            // FIXME: remove args from "|"
             cmdObj.pipeTo = mkCommandObject(args.slice(pipeIdx+1));
+
+            // remove everything from "|" from the original args
+            args = args.slice(0, pipeIdx);
         }
         cmdObj.args = args.filter(val => val != null);
         return cmdObj;
