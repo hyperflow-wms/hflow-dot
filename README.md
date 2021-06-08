@@ -7,12 +7,18 @@ A collection of small useful tools for the HyperFlow workflow engine
 - `hflow-metis`: convert HyperFlow workflow graph to [Metis](http://glaros.dtc.umn.edu/gkhome/metis/metis/overview) format (graph partitioning tool).
 - `hflow-patoh`: convert HyperFlow workflow graph to [Patoh](https://www.cc.gatech.edu/~umit/software.html) format (graph partitioning tool).
 - `hflow-convert-makeflow`: convert [Makeflow](http://ccl.cse.nd.edu/software/makeflow) mf/json workflow to HyperFlow json.
+- `hflow-convert-wfcommons`: convert from [WfCommons](https://wfcommons.org) [workflow format](https://github.com/wfcommons/workflow-schema) to Hyperflow json. 
 
 ## Requirements
 
-- Node v12.x
+- Node v12.x or higher
 
 ## Installation
+From package:
+```
+npm install -g @hyperflow/tools
+```
+From master branch:
 ```
 npm install -g https://github.com/hyperflow-wms/hflow-tools/archive/master.tar.gz
 ```
@@ -89,4 +95,11 @@ Usage:
 hflow-convert-makeflow: converts workflows in Makeflow mf/json format into HyperFlow json
 Usage:
   hflow-convert-makeflow <makeflow MF/JSON file>
+```
+
+### hflow-convert-wfcommons
+```
+hflow-convert-wfcommons: converts a Wf-Commons trace to HyperFlow workflow JSON format
+Usage:
+  hflow-convert-wfcommons <wfcommons-json-file-path>
 ```
