@@ -96,7 +96,8 @@ function createWorkflow(wf_mfjson, functionName, cb) {
         // check for stdout/stderr redirections and pipes
         var stdoutIdx = args.indexOf(">");
         var stderrIdx = args.indexOf("2>");
-        var pipeIdx = args.indexOf("|");
+        //var pipeIdx = args.indexOf("|");
+        pipeIdx = -1; // disable searching for pipes - they will be handled by the "shell" flag
         if (stdoutIdx != -1 && (stdoutIdx < pipeIdx || pipeIdx == -1)) {
             cmdObj.stdout = args[stdoutIdx+1];
             delete args[stdoutIdx];
@@ -134,6 +135,11 @@ function createWorkflow(wf_mfjson, functionName, cb) {
         var cmdObj = mkCommandObject(cmd);
         var executable = cmdObj.executable;
         var args = cmdObj.args;
+
+        // if there are any shell special characters in the args, we set the 'shell' flag for the executor
+        if (args.join(' ').match(/[*$|]/)) {
+            cmdObj.shell = true;
+        }
         wfOut.processes[procId].config.executor = cmdObj;
         wfOut.processes[procId].name = lookupName(executable, args) || executable;
 
