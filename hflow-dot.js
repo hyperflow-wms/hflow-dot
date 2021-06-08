@@ -122,6 +122,7 @@ if (full) { // generate full graph
       n.set('label', name);
       n.set('color', colors[procNames[name]]);
       n.set('style', 'filled');
+      n.set('fontsize', 14);
     });
   } else {
     // build the graphviz graph and save it
