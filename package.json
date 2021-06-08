@@ -1,7 +1,7 @@
 {
   "name": "hflow-tools",
   "version": "1.2.6",
-  "description": "Convert Hyperflow workflow graph to Graphviz dot format",
+  "description": "Useful tools for the HyperFlow Workflow Management System",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
