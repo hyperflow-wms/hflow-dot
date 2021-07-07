@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-var docopt   = require('docopt').docopt;
+var docopt   = require('docopt').docopt,
+    fs       = require('fs');
 
 var doc = "\
 hflow-convert-wfcommons: converts a Wf-Commons trace to HyperFlow workflow JSON format\n\
@@ -91,10 +92,12 @@ wf.jobs.forEach(function(wfJob) {
   }
 
   procObj.config.traceInfo = {
+    runtime: wfJob.runtime,
     avgCPU: wfJob.avgCPU,
+    memory: wfJob.memory,
     bytesRead: wfJob.bytesRead,
     bytesWritten: wfJob.bytesWritten,
-    memory: wfJob.memory,
+    priority: wfJob.priority,
     machine: wfJob.machine
   }
 });
