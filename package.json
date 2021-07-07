@@ -1,5 +1,5 @@
 {
-  "name": "hflow-tools",
+  "name": "@hyperflow/tools",
   "version": "1.3.0",
   "description": "Useful tools for the HyperFlow Workflow Management System",
   "scripts": {
