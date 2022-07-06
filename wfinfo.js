@@ -52,7 +52,7 @@ var main = function(wf, partmap, filedir) {
     var maxPhase = Math.max.apply(null, phases);
     var levelCounts = Array(maxPhase).fill(0);
 
-     wf.processes.forEach((proc, idx) => {
+    wf.processes.forEach((proc, idx) => {
         wf.processes[idx].phase = phases[idx];
         levelCounts[phases[idx]-1]++;
     });
@@ -67,11 +67,6 @@ var main = function(wf, partmap, filedir) {
             }
         });
         nPartitions += 1;
-
-        partitioningPerPhase = Array(maxPhase).fill(1).map(p => Array(nPartitions).fill(0)); 
-        processes.forEach(p => { 
-            partitioningPerPhase[p.phase-1][p.partition-1]++;
-        });
     }
 
     var addFileInfo = function(filedir) {
@@ -87,6 +82,19 @@ var main = function(wf, partmap, filedir) {
     if (partmap) computePartitions(partmap);
 
     if (filedir) addFileInfo(filedir);
+
+    let nPartitions = 0;
+    wf.processes.forEach((proc, idx) => {
+        let p = wf.processes[idx]?.config?.executor?.partition || 0; // optional chaining syntax
+        if (nPartitions < p) { nPartitions = p; }
+    });
+
+    if (nPartitions) {
+        partitioningPerPhase = Array(maxPhase).fill(1).map(p => Array(nPartitions).fill(0));
+        processes.forEach(p => {
+            partitioningPerPhase[p.phase - 1][p.config.executor.partition - 1]++;
+        });
+    }
 
     return {
         partitioningPerPhase: partitioningPerPhase,
